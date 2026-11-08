@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bokang Falatsi | Portfolio</title>
+  <meta name="description" content="Portfolio of Bokang Falatsi: financial data science, credit risk and econometrics.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1 id="name"></h1>
+    <p id="tagline"></p>
+    <div class="buttons" id="buttons"></div>
+  </header>
+
+  <nav>
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <main>
+    <section id="about">
+      <h2>About</h2>
+      <p id="aboutText"></p>
+    </section>
+
+    <section id="experience">
+      <h2>Experience</h2>
+      <div id="experienceList"></div>
+      <h2 style="margin-top:32px">Education</h2>
+      <div id="educationList"></div>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <div id="projectList"></div>
+    </section>
+
+    <section id="skills">
+      <h2>Skills and Certifications</h2>
+      <div class="chips" id="skillList"></div>
+      <div id="certList" style="margin-top:16px"></div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="card" id="contactCard"></div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <script src="data.js"></script>
+  <script>
+    const d = SITE_DATA;
+
+    // Small helper to create elements safely
+    function el(tag, className, text) {
+      const e = document.createElement(tag);
+      if (className) e.className = className;
+      if (text) e.textContent = text;
+      return e;
+    }
+    function link(href, text) {
+      const a = el("a", "", text);
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener";
+      return a;
+    }
+
+    // Header
+    document.getElementById("name").textContent = d.name;
+    document.getElementById("tagline").textContent = d.tagline;
+    document.getElementById("aboutText").textContent = d.about;
+
+    const buttons = document.getElementById("buttons");
+    if (d.links.github) { const a = link(d.links.github, "GitHub"); a.className = "btn"; buttons.appendChild(a); }
+    if (d.links.linkedin) { const a = link(d.links.linkedin, "LinkedIn"); a.className = "btn"; buttons.appendChild(a); }
+    if (d.links.email) { const a = link("mailto:" + d.links.email, "Email me"); a.className = "btn"; a.removeAttribute("target"); buttons.appendChild(a); }
+
+    // Experience
+    const expList = document.getElementById("experienceList");
+    d.experience.forEach(job => {
+      const card = el("div", "card");
+      card.appendChild(el("h3", "", job.role));
+      card.appendChild(el("div", "meta", job.org + " | " + job.period));
+      const ul = el("ul");
+      job.points.forEach(p => ul.appendChild(el("li", "", p)));
+      card.appendChild(ul);
+      expList.appendChild(card);
+    });
+
+    // Education
+    const eduList = document.getElementById("educationList");
+    d.education.forEach(e => {
+      const card = el("div", "card");
+      card.appendChild(el("h3", "", e.title));
+      card.appendChild(el("div", "meta", e.org + " | " + e.period));
+      eduList.appendChild(card);
+    });
+
+    // Projects
+    const projList = document.getElementById("projectList");
+    d.projects.forEach(p => {
+      const card = el("div", "card");
+      const h = el("h3", "", p.title);
+      const done = p.status.toLowerCase() === "completed";
+      h.appendChild(el("span", "tag " + (done ? "done" : "progress"), p.status));
+      card.appendChild(h);
+      card.appendChild(el("p", "", p.description));
+      if (p.tools && p.tools.length) {
+        const chips = el("div", "chips");
+        chips.style.marginTop = "10px";
+        p.tools.forEach(t => chips.appendChild(el("span", "chip tool", t)));
+        card.appendChild(chips);
+      }
+      if (p.repo) {
+        const wrap = el("p");
+        wrap.appendChild(link(p.repo, "View on GitHub"));
+        card.appendChild(wrap);
+      }
+      projList.appendChild(card);
+    });
+
+    // Skills and certifications
+    const skillList = document.getElementById("skillList");
+    d.skills.forEach(s => skillList.appendChild(el("span", "chip", s)));
+    const certList = document.getElementById("certList");
+    d.certifications.forEach(c => certList.appendChild(el("p", "", "Certificate: " + c)));
+
+    // Contact
+    const contact = document.getElementById("contactCard");
+    if (d.links.email) {
+      const p = el("p", "", "Email: ");
+      p.appendChild(link("mailto:" + d.links.email, d.links.email));
+      contact.appendChild(p);
+    }
+    if (d.links.phone) contact.appendChild(el("p", "", "Phone: " + d.links.phone));
+    if (d.links.github) {
+      const p = el("p", "", "GitHub: ");
+      p.appendChild(link(d.links.github, d.links.github.replace("https://", "")));
+      contact.appendChild(p);
+    }
+
+    document.getElementById("footer").textContent = d.name + " | " + new Date().getFullYear();
+  </script>
+</body>
+</html>
